@@ -13,8 +13,16 @@ function getCurrentDateTimeRange() {
     // 构建开始时间和结束时间
     const startDateTime = `${dateStr} 00:00:00`;
     const endDateTime = `${dateStr} 23:59:59`;
+    const startDateTime1 = `${dateStr} 00:00:00`;
+    const endDateTime1 = `${dateStr} 10:00:00`;
+    const startDateTime2 = `${dateStr} 10:00:00`;
+    const endDateTime2 = `${dateStr} 11:30:00`;
+    const startDateTime3 = `${dateStr} 11:30:00`;
+    const endDateTime3 = `${dateStr} 13:00:00`;
+    const startDateTime4 = `${dateStr} 13:00:00`;
+    const endDateTime4 = `${dateStr} 14:30:00`;
 
-    return { startDateTime, endDateTime };
+    return { startDateTime, endDateTime,startDateTime1,endDateTime1,startDateTime2,endDateTime2,startDateTime3,endDateTime3,startDateTime4,endDateTime4 };
 }
 
 
