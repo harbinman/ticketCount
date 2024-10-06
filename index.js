@@ -100,7 +100,7 @@ app.get('/sms', async function (req, res) {
             <br> 
             <br> 
             ${currenSMSDateTime}，全天入园${total}人。其中：检票入园${total - officialReception}人，公务接待${officialReception}人。<br> 
-            1.8:30-10:00检票入园${section1}人;<br> 
+            1.08:30-10:00检票入园${section1}人;<br> 
             2.10:00-11:30检票入园${section2}人;<br> 
             3.11:30-13:00检票入园${section3}人;<br> 
             4.13:00-14:30检票入园${section4}人;<br> 
