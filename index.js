@@ -8,10 +8,34 @@ const { getSMScontent } = require('./getSMScontent')
 const app = express()
 
 
-app.get('/', async function (req, res) {
-  const { startDateTime, endDateTime, startDateTime1, endDateTime1, startDateTime2, endDateTime2, startDateTime3, endDateTime3, startDateTime4, endDateTime4 } = getCurrentDateTimeRange();
+app.get('/count', async function (req, res) {
+  const { startDateTime, endDateTime} = getCurrentDateTimeRange();
   let leaveCount = 0;
   let inCount = 0;
+  try {
+    leaveCount = await getLeaveCount(startDateTime, endDateTime);
+  } catch (err) {
+    console.error('获取离园人数时出错:', err);
+    return res.status(500).send('获取离园人数时出错，请稍后重试。');
+  }
+
+  try {
+    inCount = await getInCount(startDateTime, endDateTime);
+  } catch (err) {
+    console.error('获取入园人数时出错:', err);
+    return res.status(500).send('获取入园人数时出错，请稍后重试。');
+  }
+ 
+
+  const currentCount = inCount - leaveCount;
+  const currentDateTime = getFormattedDateTime();
+ 
+
+  res.send(`截至${currentDateTime}，已入园${inCount}人，当前在园人数${currentCount}人`);
+});
+
+app.get('/sms', async function (req, res) {
+  const {startDateTime1, endDateTime1, startDateTime2, endDateTime2, startDateTime3, endDateTime3, startDateTime4, endDateTime4 } = getCurrentDateTimeRange();
   // 初始化变量
   let onlineEntry = 0;
   let onSiteEntry = 0;
@@ -54,19 +78,6 @@ app.get('/', async function (req, res) {
     return res.status(500).send('获取短信内容出错，请稍后重试。');
   }
   try {
-    leaveCount = await getLeaveCount(startDateTime, endDateTime);
-  } catch (err) {
-    console.error('获取离园人数时出错:', err);
-    return res.status(500).send('获取离园人数时出错，请稍后重试。');
-  }
-
-  try {
-    inCount = await getInCount(startDateTime, endDateTime);
-  } catch (err) {
-    console.error('获取入园人数时出错:', err);
-    return res.status(500).send('获取入园人数时出错，请稍后重试。');
-  }
-  try {
     section1 = await getInCount(startDateTime1, endDateTime1);
     section2 = await getInCount(startDateTime2, endDateTime2);
     section3 = await getInCount(startDateTime3, endDateTime3);
@@ -78,15 +89,9 @@ app.get('/', async function (req, res) {
     return res.status(500).send('获取入园人数时出错，请稍后重试。');
   }
 
-
-  const currentCount = inCount - leaveCount;
-  const currentDateTime = getFormattedDateTime();
   const currenSMSDateTime = getFormattedSMSDateTime();
 
-  res.send(`截至${currentDateTime}，已入园${inCount}人，当前在园人数${currentCount}人 
-            <br> 
-            <br> 
-            ${currenSMSDateTime}，全天入园${total}人。其中：
+  res.send(`${currenSMSDateTime}，全天入园${total}人。其中：
             1.网络预约票${onlineEntry}人；
             2.现场预约票（含年卡）${onSiteEntry}人；
             3.团队预约票${teamEntry}人；
