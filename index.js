@@ -53,19 +53,19 @@ app.get('/sms', async function (req, res) {
     // 遍历数据并保存到相应的变量中
     data.forEach(item => {
       switch (item.NAME) {
-        case '网络入园':
+        case '网络购票入园':
           onlineEntry = item.NUM;
           break;
-        case '现场入园':
+        case '现场购票入园':
           onSiteEntry = item.NUM;
           break;
-        case '团队入园':
+        case '团队购票入园':
           teamEntry = item.NUM;
           break;
         case '政策性免费入园':
           policyFreeEntry = item.NUM;
           break;
-        case '公务接待':
+        case '公务接待入园':
           officialReception = item.NUM;
           break;
         default:
