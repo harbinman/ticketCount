@@ -152,7 +152,16 @@ async function getSMScontent() {
 
         UNION ALL
 
-        -- 第四部分：公务接待
+        -- 第三部分：僧团录入
+        SELECT  '僧团' as name,
+        NVL(SUM(PER_COUNT),0) as num
+        FROM nss_integration.TB_TEMPLE_REC_REPORT
+        WHERE 1 = 1
+            and substr(F_DATE,1,10) = to_char(SYSDATE,'YYYY-MM-DD')
+
+        UNION ALL
+
+        -- 第五部分：公务接待
         SELECT
             *
         FROM (

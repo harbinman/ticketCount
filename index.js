@@ -9,7 +9,7 @@ const app = express()
 
 
 app.get('/count', async function (req, res) {
-  const { startDateTime, endDateTime} = getCurrentDateTimeRange();
+  const { startDateTime, endDateTime } = getCurrentDateTimeRange();
   let leaveCount = 0;
   let inCount = 0;
   try {
@@ -25,20 +25,21 @@ app.get('/count', async function (req, res) {
     console.error('获取入园人数时出错:', err);
     return res.status(500).send('获取入园人数时出错，请稍后重试。');
   }
- 
+
 
   const currentCount = inCount - leaveCount;
   const currentDateTime = getFormattedDateTime();
- 
+
 
   res.send(`截至${currentDateTime}，已入园${inCount}人，当前在园人数${currentCount}人`);
 });
 
 app.get('/sms', async function (req, res) {
-  const {startDateTime1, endDateTime1, startDateTime2, endDateTime2, startDateTime3, endDateTime3, startDateTime4, endDateTime4 } = getCurrentDateTimeRange();
+  const { startDateTime1, endDateTime1, startDateTime2, endDateTime2, startDateTime3, endDateTime3, startDateTime4, endDateTime4 } = getCurrentDateTimeRange();
   // 初始化变量
   let onlineEntry = 0;
   let onSiteEntry = 0;
+  let monk = 0;
   let teamEntry = 0;
   let policyFreeEntry = 0;
   let officialReception = 0; // 公务接待的结果，如果存在将其赋值
@@ -68,11 +69,14 @@ app.get('/sms', async function (req, res) {
         case '公务接待入园':
           officialReception = item.NUM;
           break;
+        case '僧团':
+          monk = item.NUM;
+          break;
         default:
           break;
       }
     });
-    total = onlineEntry + onSiteEntry + teamEntry + policyFreeEntry + officialReception;
+    total = onlineEntry + onSiteEntry + teamEntry + policyFreeEntry + monk + officialReception;
   } catch (error) {
     console.error('获取短信内容出错:', error);
     return res.status(500).send('获取短信内容出错，请稍后重试。');
@@ -82,8 +86,8 @@ app.get('/sms', async function (req, res) {
     section2 = await getInCount(startDateTime2, endDateTime2);
     section3 = await getInCount(startDateTime3, endDateTime3);
     section4 = await getInCount(startDateTime4, endDateTime4);
-    section5 = total-section1-section2-section3-section4;
-    
+    section5 = total - section1 - section2 - section3 - section4;
+
   } catch (err) {
     console.error('获取入园人数时出错:', err);
     return res.status(500).send('获取入园人数时出错，请稍后重试。');
@@ -95,7 +99,7 @@ app.get('/sms', async function (req, res) {
             1.网络预约票${onlineEntry}人；
             2.现场预约票（含年卡）${onSiteEntry}人；
             3.团队预约票${teamEntry}人；
-            4.政策性免费预约票（现役军人、退役军人、消防救援人员、南京市医务人员、老人儿童等优待人群）${policyFreeEntry}人；
+            4.政策性免费预约票（现役军人、退役军人、消防救援人员、南京市医务人员、老人儿童等优待人群）${policyFreeEntry + monk}人；
             5.公务接待${officialReception}人。
             <br> 
             <br> 
