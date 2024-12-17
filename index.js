@@ -99,7 +99,7 @@ app.get('/sms', async function (req, res) {
             1.网络预约票${onlineEntry}人；
             2.现场预约票（含年卡）${onSiteEntry}人；
             3.团队预约票${teamEntry}人；
-            4.政策性免费预约票（现役军人、退役军人、消防救援人员、南京市医务人员、老人儿童等优待人群）${policyFreeEntry + monk}人；
+            4.政策性免费预约票（现役军人、退役军人、消防救援人员、南京市医务人员、老人儿童等优待人群）${policyFreeEntry+monk}人；
             5.公务接待${officialReception}人。
             <br> 
             <br> 
