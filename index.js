@@ -12,6 +12,7 @@ app.get('/count', async function (req, res) {
   const { startDateTime, endDateTime } = getCurrentDateTimeRange();
   let leaveCount = 0;
   let inCount = 0;
+  let officialReception = 0;
   try {
     leaveCount = await getLeaveCount(startDateTime, endDateTime);
   } catch (err) {
@@ -21,17 +22,29 @@ app.get('/count', async function (req, res) {
 
   try {
     inCount = await getInCount(startDateTime, endDateTime);
+    const data = await getSMScontent();
+    // 遍历数据并保存到相应的变量中
+    data.forEach(item => {
+      switch (item.NAME) {
+        case '公务接待入园':
+          officialReception = item.NUM;
+          break;
+        default:
+          break;
+      }
+    });
+
   } catch (err) {
     console.error('获取入园人数时出错:', err);
     return res.status(500).send('获取入园人数时出错，请稍后重试。');
   }
 
 
-  const currentCount = inCount - leaveCount;
+  const currentCount = Number(inCount) + Number(officialReception) - Number(leaveCount);
   const currentDateTime = getFormattedDateTime();
 
 
-  res.send(`截至${currentDateTime}，已入园${inCount}人，当前在园人数${currentCount}人`);
+  res.send(`截至${currentDateTime}，已入园${Number(inCount) + Number(officialReception)}人，当前在园人数${currentCount}人`);
 });
 
 app.get('/sms', async function (req, res) {
@@ -99,7 +112,7 @@ app.get('/sms', async function (req, res) {
             1.网络预约票${onlineEntry}人；
             2.现场预约票（含年卡）${onSiteEntry}人；
             3.团队预约票${teamEntry}人；
-            4.政策性免费预约票（现役军人、退役军人、消防救援人员、南京市医务人员、老人儿童等优待人群）${policyFreeEntry+monk}人；
+            4.政策性免费预约票（现役军人、退役军人、消防救援人员、南京市医务人员、老人儿童等优待人群）${policyFreeEntry + monk}人；
             5.公务接待${officialReception}人。
             <br> 
             <br> 
